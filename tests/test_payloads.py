@@ -81,3 +81,48 @@ def test_vcard_needs_name_and_contact_detail():
         vcard_payload("", phone="+92 300 1234567")
     with pytest.raises(ValueError):
         vcard_payload("Awais Sabit")
+
+
+def test_email_payload_plain():
+    from qrforge.payloads import email_payload
+
+    assert email_payload("awaissabit@gmail.com") == "mailto:awaissabit@gmail.com"
+
+
+def test_email_payload_with_subject_and_body():
+    from qrforge.payloads import email_payload
+
+    payload = email_payload("awaissabit@gmail.com", subject="Hello there", body="How are you?")
+    assert payload == "mailto:awaissabit@gmail.com?subject=Hello%20there&body=How%20are%20you%3F"
+
+
+def test_email_bad_address_is_rejected():
+    from qrforge.payloads import email_payload
+
+    with pytest.raises(ValueError):
+        email_payload("not-an-email")
+
+
+def test_phone_payload_strips_spaces():
+    from qrforge.payloads import phone_payload
+
+    assert phone_payload("+92 300 1234567") == "tel:+923001234567"
+
+
+def test_phone_bad_number_is_rejected():
+    from qrforge.payloads import phone_payload
+
+    with pytest.raises(ValueError):
+        phone_payload("call me")
+
+
+def test_sms_payload_with_message():
+    from qrforge.payloads import sms_payload
+
+    assert sms_payload("+92 300 1234567", "Hello!") == "sms:+923001234567?body=Hello%21"
+
+
+def test_sms_payload_without_message():
+    from qrforge.payloads import sms_payload
+
+    assert sms_payload("03001234567") == "sms:03001234567"

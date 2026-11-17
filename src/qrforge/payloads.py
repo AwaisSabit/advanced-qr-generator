@@ -8,6 +8,9 @@ CLI, the batch runner and library users all produce identical
 payloads, and the formats are covered by tests.
 """
 
+from urllib.parse import quote as _url_quote
+
+
 SECURITY_TYPES = ("WPA", "WEP", "nopass")
 
 
@@ -110,3 +113,69 @@ def wifi_payload(
     if hidden:
         parts.append("H:true")
     return ";".join(parts) + ";;"
+
+
+def email_payload(
+    address: str, subject: str | None = None, body: str | None = None
+) -> str:
+    """Build a ``mailto:`` payload, e.g. ``mailto:a@b.com?subject=Hi``.
+
+    Phones that scan it open a new email to ``address``. The
+    subject and body are URL-encoded so spaces and punctuation
+    survive the scan.
+    """
+    if not address or "@" not in address:
+        raise ValueError(f"Not a valid email address: {address!r}.")
+    parts = []
+    if subject:
+        parts.append(f"subject={_url_quote(subject)}")
+    if body:
+        parts.append(f"body={_url_quote(body)}")
+    payload = f"mailto:{address.strip()}"
+    if parts:
+        payload += "?" + "&".join(parts)
+    return payload
+
+
+def phone_payload(number: str) -> str:
+    """Build a ``tel:`` payload, e.g. ``tel:+923001234567``.
+
+    Phones that scan it offer to call the number. Spaces, dashes
+    and brackets are stripped, since they are not part of a
+    telephone URI.
+    """
+    if not number or not number.strip():
+        raise ValueError("A phone number must not be empty.")
+    cleaned = (
+        number.strip()
+        .replace(" ", "")
+        .replace("-", "")
+        .replace("(", "")
+        .replace(")", "")
+    )
+    if not cleaned.lstrip("+").isdigit():
+        raise ValueError(f"Not a valid phone number: {number!r}.")
+    return f"tel:{cleaned}"
+
+
+def sms_payload(number: str, message: str | None = None) -> str:
+    """Build an ``sms:`` payload, e.g. ``sms:+923001234567?body=Hi``.
+
+    Phones that scan it open a new text message to ``number`` with
+    the message already filled in when one is given.
+    """
+    if not number or not number.strip():
+        raise ValueError("An SMS needs a phone number.")
+    cleaned = (
+        number.strip()
+        .replace(" ", "")
+        .replace("-", "")
+        .replace("(", "")
+        .replace(")", "")
+    )
+    if not cleaned.lstrip("+").isdigit():
+        raise ValueError(f"Not a valid phone number: {number!r}.")
+    payload = f"sms:{cleaned}"
+    if message:
+        payload += f"?body={_url_quote(message)}"
+    return payload
