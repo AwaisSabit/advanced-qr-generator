@@ -59,12 +59,15 @@ def qr_matrix(config: QRConfig) -> list[list[bool]]:
 
 
 def generate_image(config: QRConfig) -> Image.Image:
-    """Render ``config`` as a Pillow image (RGB mode)."""
-    qr = build_qr(config)
-    image = qr.make_image(
-        fill_color=config.fill_color, back_color=config.back_color
-    )
-    return image.convert("RGB")
+    """Render ``config`` as a Pillow image (RGB mode).
+
+    Styling (module shape, eye shape, colours) is applied through
+    :mod:`qrforge.styles`, so a plain square code and a styled one
+    go through the same path.
+    """
+    from qrforge.styles import styled_image
+
+    return styled_image(build_qr(config), config)
 
 
 def save_qr(config: QRConfig, output_path: str | Path) -> Path:

@@ -14,7 +14,8 @@ class QRConfig:
     is the quiet-zone width in modules. ``fill_color`` and
     ``back_color`` are any Pillow colour (name or ``#rrggbb``).
     ``module_shape`` is one of ``square``, ``rounded``, ``dots``,
-    ``gapped`` or ``bars`` (see :mod:`qrforge.styles`).
+    ``gapped``, ``bars`` or ``bars-horizontal``
+    (see :mod:`qrforge.styles`).
     """
 
     data: str
@@ -41,3 +42,8 @@ class QRConfig:
             raise ValueError("Border must not be negative.")
         if not 0 < self.logo_scale <= 0.3:
             raise ValueError("Logo scale must be between 0 and 0.3.")
+        if self.module_shape not in (
+            "square", "rounded", "dots", "gapped", "bars", "bars-horizontal",
+        ):
+            raise ValueError(f"Unknown module shape: {self.module_shape!r}.")
+
