@@ -6,6 +6,7 @@ a Pillow image, :func:`save_qr` writes it to a file, and
 :func:`render_terminal` draws it as text for the terminal.
 """
 
+import io
 from pathlib import Path
 
 import qrcode
@@ -75,13 +76,44 @@ def generate_image(config: QRConfig) -> Image.Image:
     return image
 
 
-def save_qr(config: QRConfig, output_path: str | Path) -> Path:
-    """Render ``config`` and save it as a PNG file.
+def generate_svg_text(config: QRConfig) -> str:
+    """Render ``config`` as an SVG document (a string of XML).
+
+    SVG is a single-colour vector code — infinitely scalable, ideal
+    for print — so module shapes and colours do not apply here.
+    """
+    from qrcode.image.svg import SvgPathImage
+
+    qr = build_qr(config)
+    image = qr.make_image(image_factory=SvgPathImage)
+    buffer = io.BytesIO()
+    image.save(buffer)
+    return buffer.getvalue().decode("utf-8")
+
+
+def save_svg(config: QRConfig, output_path: str | Path) -> Path:
+    """Render ``config`` and save it as an SVG file.
 
     Parent directories are created when needed. Returns the path
     that was written.
     """
+    path = Path(output_path).with_suffix(".svg")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(generate_svg_text(config), encoding="utf-8")
+    return path
+
+
+def save_qr(config: QRConfig, output_path: str | Path) -> Path:
+    """Render ``config`` and save it to a file.
+
+    The format follows the file suffix: ``.svg`` writes a vector
+    code, anything else writes a PNG (``.jpg``/``.bmp`` are also
+    accepted and written as raster images). Parent directories are
+    created when needed. Returns the path that was written.
+    """
     path = Path(output_path)
+    if path.suffix.lower() == ".svg":
+        return save_svg(config, path)
     if path.suffix.lower() not in (".png", ".jpg", ".jpeg", ".bmp"):
         path = path.with_suffix(".png")
     path.parent.mkdir(parents=True, exist_ok=True)
