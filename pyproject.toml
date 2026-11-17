@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qrforge"
+version = "1.0.0"
+description = "An advanced QR code generator for Python: styled codes, WiFi, vCard, email, SMS, logos, SVG and batch generation."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{name = "Awais Sabit", email = "awaissabit@gmail.com"}]
+keywords = ["qr-code", "qrcode", "cli", "wifi", "vcard", "svg", "python"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Multimedia :: Graphics",
+    "Topic :: Utilities",
+]
+dependencies = [
+    "qrcode[pil]>=8",
+    "Pillow>=10",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[project.scripts]
+qrforge = "qrforge.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/AwaisSabit/advanced-qr-generator"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

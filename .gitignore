@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Test / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Generated QR outputs (test and demo artefacts)
+generated/
+*.qr.png
+/tmp/qrforge-*
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
