@@ -1,0 +1,4 @@
+data,type,output,fill_color,module_shape
+https://example.com,text,website.png,black,square
+https://github.com/AwaisSabit,text,github.png,#1a5276,rounded
+Hello from QRForge!,text,hello.png,#7b241c,dots
