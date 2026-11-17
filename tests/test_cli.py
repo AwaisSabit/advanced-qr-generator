@@ -99,7 +99,7 @@ def test_cli_generate_with_style_options(tmp_path):
         "--shape", "dots", "--fill", "#1a5276", "--error-correction", "H",
     ]) == 0
     with Image.open(out) as image:
-        assert (26, 82, 118) in set(image.getdata())
+        assert b"\x1a\x52\x76" in image.tobytes()  # #1a5276 modules present
 
 
 def test_cli_as_module_exits_zero(tmp_path):

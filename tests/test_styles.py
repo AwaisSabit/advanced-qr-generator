@@ -25,7 +25,7 @@ def test_styled_output_differs_by_colour():
     black = generate_image(QRConfig("https://example.com", fill_color="black"))
     navy = generate_image(QRConfig("https://example.com", fill_color="#000080"))
     assert black.tobytes() != navy.tobytes()
-    assert (0, 0, 128) in set(navy.getdata())
+    assert b"\x00\x00\x80" in navy.tobytes()  # navy modules are present
 
 
 def test_invalid_colour_is_rejected():

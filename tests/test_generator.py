@@ -24,9 +24,9 @@ def test_text_qr_produces_valid_image(tmp_path):
 
 def test_url_qr_image_is_not_blank():
     image = generate_image(QRConfig("https://example.com"))
-    pixels = list(image.getdata())
-    assert any(p != (255, 255, 255) for p in pixels)  # dark modules exist
-    assert any(p == (255, 255, 255) for p in pixels)  # light modules exist
+    grey = image.convert("L").tobytes()
+    assert 0 in grey  # dark modules exist
+    assert 255 in grey  # light modules exist
 
 
 @pytest.mark.parametrize("level", ["L", "M", "Q", "H"])

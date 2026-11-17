@@ -27,7 +27,7 @@ def test_logo_embedding_keeps_size_and_adds_logo_pixels(tmp_path):
     # The centre of the code now carries the red logo.
     cx, cy = with_logo.width // 2, with_logo.height // 2
     centre = with_logo.crop((cx - 10, cy - 10, cx + 10, cy + 10))
-    assert (220, 30, 30) in set(centre.getdata())
+    assert b"\xdc\x1e\x1e" in centre.tobytes()  # red logo pixels at the centre
 
 
 def test_logo_embedding_works_with_styled_code(tmp_path):

@@ -62,7 +62,7 @@ def qr_matrix(config: QRConfig) -> list[list[bool]]:
 def generate_image(config: QRConfig) -> Image.Image:
     """Render ``config`` as a Pillow image (RGB mode).
 
-    Styling (module shape, eye shape, colours) is applied through
+    Styling (module shape, colours) is applied through
     :mod:`qrforge.styles`, so a plain square code and a styled one
     go through the same path. When ``config.logo_path`` is set, the
     logo is embedded in the centre afterwards.
