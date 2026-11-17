@@ -11,6 +11,59 @@ payloads, and the formats are covered by tests.
 SECURITY_TYPES = ("WPA", "WEP", "nopass")
 
 
+def _vcard_name_parts(full_name: str) -> tuple[str, str]:
+    """Split ``"First Last"`` into ``(first, last)`` for the ``N:`` field.
+
+    A single word is treated as the family name. Middle names stay
+    with the first name.
+    """
+    words = full_name.split()
+    if len(words) == 1:
+        return "", words[0]
+    return " ".join(words[:-1]), words[-1]
+
+
+def vcard_payload(
+    name: str,
+    phone: str | None = None,
+    email: str | None = None,
+    org: str | None = None,
+    title: str | None = None,
+    url: str | None = None,
+    address: str | None = None,
+    note: str | None = None,
+) -> str:
+    """Build a vCard 3.0 payload for a contact QR code.
+
+    Phones that scan it offer to save the contact. ``name`` is
+    required, plus at least one of ``phone`` or ``email`` so the
+    card is useful. Lines use CRLF, as the vCard format specifies.
+    """
+    if not name or not name.strip():
+        raise ValueError("A vCard needs a name.")
+    if not phone and not email:
+        raise ValueError("A vCard needs at least a phone number or an email address.")
+
+    first, last = _vcard_name_parts(name.strip())
+    lines = ["BEGIN:VCARD", "VERSION:3.0", f"N:{last};{first};;;", f"FN:{name.strip()}"]
+    if org:
+        lines.append(f"ORG:{org}")
+    if title:
+        lines.append(f"TITLE:{title}")
+    if phone:
+        lines.append(f"TEL;TYPE=CELL:{phone}")
+    if email:
+        lines.append(f"EMAIL:{email}")
+    if url:
+        lines.append(f"URL:{url}")
+    if address:
+        lines.append(f"ADR:;;{address};;;;")
+    if note:
+        lines.append(f"NOTE:{note.replace(chr(10), ' ')}")
+    lines.append("END:VCARD")
+    return "\r\n".join(lines)
+
+
 def _escape(value: str) -> str:
     """Escape the characters that are special in WiFi payloads.
 
