@@ -63,11 +63,16 @@ def generate_image(config: QRConfig) -> Image.Image:
 
     Styling (module shape, eye shape, colours) is applied through
     :mod:`qrforge.styles`, so a plain square code and a styled one
-    go through the same path.
+    go through the same path. When ``config.logo_path`` is set, the
+    logo is embedded in the centre afterwards.
     """
+    from qrforge.logo import embed_logo
     from qrforge.styles import styled_image
 
-    return styled_image(build_qr(config), config)
+    image = styled_image(build_qr(config), config)
+    if config.logo_path:
+        image = embed_logo(image, config.logo_path, config.logo_scale)
+    return image
 
 
 def save_qr(config: QRConfig, output_path: str | Path) -> Path:
